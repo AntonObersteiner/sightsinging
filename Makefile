@@ -8,4 +8,4 @@ stop:
 	kill $$(cat pid_py_host)
 
 open:
-	firefox http://localhost:8000
+	firefox http://localhost:8000 &
