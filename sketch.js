@@ -185,17 +185,38 @@ Sheet.prototype.advance = function () {
 }
 
 let sheet;
+let audio_state;
 function setup() {
 	createCanvas(600, 600);
 	sheet = new Sheet();
+	//mimics the autoplay policy
+	getAudioContext().suspend();
 }
 
 function draw() {
 	clear();
 	sheet.draw();
+	if (audio_state != getAudioContext().state) {
+		console.log(getAudioContext().state);
+		audio_state = getAudioContext().state;
+	}
 }
 
 function mousePressed() {
+	userStartAudio();
+	console.log(getAudioContext().state);
+	loop();
+}
+
+function audio_toggle() {
+	if (getAudioContext().state == 'suspended')
+		getAudioContext().resume();
+	else if (getAudioContext().state == 'running')
+		getAudioContext().suspend();
+	else
+		userStartAudio();
+		console.log(getAudioContext().state);
+		loop();
 }
 
 function keyPressed(){
