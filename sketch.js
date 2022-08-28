@@ -64,6 +64,19 @@ Sheet.prototype.to_C_major = function (note) {
 	console.log("note", note, "in octave", octave, "could not be sorted");
 	return null;
 }
+Sheet.prototype.get_note_code = function (note) {
+	in_C = this.to_C_major(note);
+	note_name = ["C", "D", "E", "F", "G", "A", "B"][in_C["line"]];
+	sharp = (in_C["sharp"] ? '#' : '');
+	octave = in_C["octave"] + 4;
+
+	//A and B are categorized as one octave higher
+	//because the counting reasonably starts at A
+	if (["A", "B"].includes(note_name))
+		octave += 1;
+
+	return note_name + sharp + octave;
+}
 Sheet.prototype.line_relative_to_note = function (pos, note_head, x1, y1, x2, y2) {
 	line (
 		pos.x + x1 * note_head.x,
