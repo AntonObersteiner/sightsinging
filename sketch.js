@@ -31,6 +31,11 @@ function Sheet() {
 		"sheet": new Field(new p5.Vector(10, 10), new p5.Vector(600, 200)),
 	}
 	this.when_full = "step"; //alternative: "jump"
+
+	this.synth = new p5.MonoSynth();
+	this.volume = 1;
+	this.delay = 1;
+	this.duration = 1;
 }
 //returns {"octave": …, "line": …, "sharp": …}, so that 12 * octave + this.accepted_notes[line] + sharp == note
 Sheet.prototype.to_C_major = function (note) {
@@ -176,6 +181,13 @@ Sheet.prototype.advance = function () {
 	}
 	this.notes.push(new_note);
 
+	this.synth.play(
+		this.get_note_code(new_note),
+		this.volume,
+		this.delay,
+		this.duration
+	);
+
 	if (this.notes.length > this.length * .9) {
 		if (this.when_full == "jump")
 			this.notes = this.notes.slice(floor(this.notes.length / 2));
@@ -185,12 +197,17 @@ Sheet.prototype.advance = function () {
 }
 
 let sheet;
+let synth;
 let audio_state;
 function setup() {
 	createCanvas(600, 600);
 	sheet = new Sheet();
 	//mimics the autoplay policy
 	getAudioContext().suspend();
+
+	synth = new p5.MonoSynth();
+	//This won't play until the context has resumed
+	synth.play('A5', .5, 0, 0.2);
 }
 
 function draw() {
