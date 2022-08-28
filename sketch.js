@@ -195,6 +195,9 @@ Sheet.prototype.advance = function () {
 			this.notes = this.notes.slice(1);
 	}
 }
+Sheet.prototype.clear = function () {
+	this.notes = [];
+}
 
 let sheet;
 let synth;
@@ -236,8 +239,14 @@ function audio_toggle() {
 		loop();
 }
 
-function keyPressed(){
-	if(keyIsDown(64+1)){ //'A'
+function keyPressed() {
+	if (keyIsDown(64 + 14)) { //'N'
 		sheet.advance();
+	} else if (keyIsDown(64 + 13)) { //'M'
+		audio_toggle();
+	} else if (keyIsDown(64 + 1)) { //'A'
+		synth.play('A5', 1, 0, 2);
+	} else if (keyIsDown(64 + 3)) { //'C'
+		sheet.clear();
 	}
 }
