@@ -20,7 +20,8 @@ function Sheet() {
 		0, 1, 2, 3, 4, 5, 6, 7, 9, 11,
 		12, 14, 16, 17, 19, 21, 23
 	];
-	this.accepted_notes = [0, 2, 4, 5, 7, 9, 11, 12];
+	this.accepted_notes = [0, 1, 2, 4, 5, 6, 7, 9, 11, 12];
+	this.natural_notes = [0, 2, 4, 5, 7, 9, 11, 12];
 	this.drawn_lines = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12];
 	this.length = 12; //how many notes → dividing lengthwise
 	this.height = 48; //how many distinct notes → dividing height on plot
@@ -43,12 +44,12 @@ Sheet.prototype.to_C_major = function (note) {
 		octave -= 1;
 	}
 
-	for (let a = 0; a < this.accepted_notes.length; a++) {
-		if (this.accepted_notes[a] >= note) {
-			sharp = (this.accepted_notes[a] > note);
+	for (let a = 0; a < this.natural_notes.length; a++) {
+		if (this.natural_notes[a] >= note) {
+			sharp = (this.natural_notes[a] > note);
 			if (sharp && a == 0) {
 				//when the note 0 (C) ans possibly its successors
-				//are not accepted natural notes for some reasons,
+				//are not natural natural notes for some reasons,
 				//write as a sharp note of the next octave lower
 				octave -= 1;
 				a += 12;
@@ -56,7 +57,7 @@ Sheet.prototype.to_C_major = function (note) {
 			return {
 				"octave": octave,
 				"line": a - sharp,
-				"sharp": note - this.accepted_notes[a - sharp],
+				"sharp": note - this.natural_notes[a - sharp],
 			};
 		}
 	}
