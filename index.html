@@ -13,10 +13,10 @@
 	<nav>
 		<section>
 			<p>Controls: Erster Buchstabe = Taste</p>
-			<input type="button" name="mute" value="Mute: Start/Stop" onclick="audio_toggle();" /> <br/>
-			<input type="button" name="next" value="Next: Neue Note" onclick="sheet.advance();" /> <br/>
-			<input type="button" name="clear" value="Clear: Noten weg" onclick="sheet.clear();" /> <br/>
-			<input type="button" name="a_play" value="A: Note a' hören" onclick="synth.play('A4', 1, 0, 2);" /> <br/>
+			<input type="button" id="mute" value="Mute: Start/Stop" onclick="audio_toggle();" /> <br/>
+			<input type="button" id="next" value="Next: Neue Note" onclick="sheet.advance();" /> <br/>
+			<input type="button" id="clear" value="Clear: Noten weg" onclick="sheet.clear();" /> <br/>
+			<input type="button" id="a_play" value="A: Note a' hören" onclick="synth.play('A4', 1, 0, 2);" /> <br/>
 		</section>
 		<section>
 			<table>
