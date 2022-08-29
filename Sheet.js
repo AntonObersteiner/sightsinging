@@ -199,7 +199,10 @@ Sheet.prototype.check_accept_row = function (octave) {
 	}
 	this.write_accepted();
 }
-Sheet.prototype.write_accepted = function () {
+Sheet.prototype.write_accepted = function (new_accepted = null) {
+	if (new_accepted != null)
+		this.accepted_notes = new_accepted;
+
 	for (let octave = -2; octave < 2; octave++) {
 		row = document.getElementById("accept_row_C" + (octave + 4));
 		//save the checkbox for the whole row so its state isn't lost

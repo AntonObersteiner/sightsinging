@@ -12,7 +12,7 @@
 <body>
 	<nav>
 		<section>
-			<p>Controls: Erster Buchstabe = Taste</p>
+			<p>Controls: Erster Buchstabe = Tastenkürzel</p>
 			<input type="button" id="mute" value="Mute: Start/Stop" onclick="audio_toggle();" /> <br/>
 			<input type="button" id="next" value="Next: Neue Note" onclick="sheet.advance();" /> <br/>
 			<input type="button" id="clear" value="Clear: Noten weg" onclick="sheet.clear();" /> <br/>
@@ -42,9 +42,20 @@
 				<tr id="accept_row_C2"></tr>
 			</table>
 		</section>
-		<section>
-			<label for="transpose"> Transponiert: <span id="transpose_label_text"> 0 </span> </label>
-			<input type="range" id="transpose" min="-24" max="24" step="1" value="0" onchange="sheet.read_transpose()">
+		<section style="display: grid">
+			<div style="display: flex">
+				<input type="button" id="accept_soprano_hard" class="accept_preset" value="Sopran schwer"
+					onclick="sheet.write_accepted([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);"
+				/>
+				<input type="button" id="accept_bass_easy" class="accept_preset" value="Bass einfach"
+					onclick="sheet.write_accepted([-17, -15, -13, -12, -10, -8, -7, -5]);"
+				/>
+			</div>
+			<div>
+				<hr />
+				<label for="transpose"> Transponiert: <span id="transpose_label_text"> 0 </span> </label>
+				<input type="range" id="transpose" min="-24" max="24" step="1" value="0" onchange="sheet.read_transpose()">
+			</div>
 		</section>
 	</nav>
 	<main>
