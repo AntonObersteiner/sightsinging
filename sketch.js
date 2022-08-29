@@ -39,6 +39,7 @@ function audio_toggle() {
 }
 
 function keyPressed() {
+	userStartAudio();
 	if (keyIsDown(64 + 14)) { //'N'
 		sheet.advance();
 	} else if (keyIsDown(64 + 13)) { //'M'
