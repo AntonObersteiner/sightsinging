@@ -36,7 +36,9 @@ function Sheet() {
 	this.volume = 1;
 	this.delay = 1;
 	this.duration = 1;
+	this.transpose = 0;
 
+	this.read_transpose();
 	this.write_accepted();
 }
 //returns {"octave": …, "line": …, "sharp": …}, so that 12 * octave + this.accepted_notes[line] + sharp == note
@@ -83,6 +85,9 @@ Sheet.prototype.get_note_code = function (note) {
 		octave += 1;
 
 	return note_name + sharp + octave;
+}
+Sheet.prototype.get_transposed_note_code = function (note) {
+	return this.get_note_code(note + this.transpose);
 }
 Sheet.prototype.line_relative_to_note = function (pos, note_head, x1, y1, x2, y2) {
 	line (
@@ -239,13 +244,18 @@ Sheet.prototype.read_accepted = function () {
 		}
 	}
 }
+Sheet.prototype.read_transpose = function () {
+	this.transpose = +document.getElementById("transpose").value;
+	document.getElementById("transpose_label_text").innerHTML = this.transpose;
+	console.log(document.getElementById("transpose"), this.transpose, document.getElementById("transpose_label_text"));
+}
 //add a new random note from the accepted_notes
 Sheet.prototype.advance = function () {
 	new_note = random(this.accepted_notes);
 	this.notes.push(new_note);
 
 	this.synth.play(
-		this.get_note_code(new_note),
+		this.get_transposed_note_code(new_note),
 		this.volume,
 		this.delay,
 		this.duration
