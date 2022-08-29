@@ -243,7 +243,11 @@ Sheet.prototype.read_accepted = function () {
 }
 Sheet.prototype.read_transpose = function () {
 	this.transpose = +document.getElementById("transpose").value;
-	document.getElementById("transpose_label_text").innerHTML = this.transpose;
+
+	label_text = (this.transpose > 0 ? "+" : "") + this.transpose;
+	label_text += " (C4 → " + this.get_note_code(this.transpose) + ")";
+	document.getElementById("transpose_label_text").innerHTML =  label_text;
+
 	console.log(document.getElementById("transpose"), this.transpose, document.getElementById("transpose_label_text"));
 }
 //add a new random note from the accepted_notes

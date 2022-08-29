@@ -1,5 +1,5 @@
 nav {
-	width: 20%;
+	width: 400px;
 	float: right;
 }
 
@@ -14,4 +14,12 @@ td, th {
 .separated-left {
 	border-left: 1px solid black;
 	border-collapse: collapse;
+}
+#defaultCanvas0 {
+	padding: 10px;
+}
+
+.accept_preset {
+	width: 25%;
+	float: left;
 }
