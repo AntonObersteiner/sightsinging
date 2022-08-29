@@ -208,14 +208,7 @@ Sheet.prototype.read_accepted = function () {
 }
 //add a new random note from the accepted_notes
 Sheet.prototype.advance = function () {
-	new_note = floor(random() * 12);
-	while (!this.isaccepted(new_note)) {
-		if (new_note > this.accepted_notes[0]) {
-			new_note--;
-		} else {
-			new_note++;
-		}
-	}
+	new_note = random(this.accepted_notes);
 	this.notes.push(new_note);
 
 	this.synth.play(
