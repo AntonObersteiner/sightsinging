@@ -36,6 +36,8 @@ function Sheet() {
 	this.volume = 1;
 	this.delay = 1;
 	this.duration = 1;
+
+	this.write_accepted();
 }
 //returns {"octave": …, "line": …, "sharp": …}, so that 12 * octave + this.accepted_notes[line] + sharp == note
 Sheet.prototype.to_C_major = function (note) {
@@ -168,6 +170,41 @@ Sheet.prototype.isaccepted = function (new_note) {
 		}
 	}
 	return false;
+}
+Sheet.prototype.accept = function (note) {
+	this.synth.play(this.get_note_code(note));
+	//read the whole array from the page
+	this.read_accepted();
+}
+Sheet.prototype.write_accepted = function () {
+	for (let octave = -2; octave < 2; octave++) {
+		row = document.getElementById("accept_row_C" + (octave + 4));
+		while (row.childElementCount)
+			row.deleteCell(0);
+
+		for (let note = 12 * octave; note < 12 * (octave + 1); note++) {
+			code = this.get_note_code(note);
+			checkbox = document.createElement("input");
+			checkbox.setAttribute("type", "checkbox");
+			checkbox.setAttribute("id", "accept_" + code);
+			checkbox.setAttribute("onclick", "sheet.accept(" + note + ");");
+			if (this.accepted_notes.includes(note))
+				checkbox.setAttribute("checked", "");
+
+			row.appendChild(document.createElement("td")).appendChild(checkbox);
+		}
+	}
+}
+Sheet.prototype.read_accepted = function () {
+	this.accepted_notes = [];
+	for (let octave = -2; octave < 2; octave++) {
+		for (let note = 12 * octave; note < 12 * (octave + 1); note++) {
+			code = this.get_note_code(note);
+			checkbox = document.getElementById("accept_" + code);
+			if (checkbox.checked)
+				this.accepted_notes.push(note);
+		}
+	}
 }
 //add a new random note from the accepted_notes
 Sheet.prototype.advance = function () {
