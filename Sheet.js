@@ -36,6 +36,8 @@ function Sheet() {
 	this.transpose = 0;
 
 	this.read_transpose();
+	this.read_delay();
+	this.read_duration();
 	this.write_accepted();
 }
 //returns {"octave": …, "line": …, "sharp": …}, so that 12 * octave + this.accepted_notes[line] + sharp == note
@@ -250,8 +252,14 @@ Sheet.prototype.read_transpose = function () {
 	label_text = (this.transpose > 0 ? "+" : "") + this.transpose;
 	label_text += " (C4 → " + this.get_note_code(this.transpose) + ")";
 	document.getElementById("transpose_label_text").innerHTML =  label_text;
-
-	console.log(document.getElementById("transpose"), this.transpose, document.getElementById("transpose_label_text"));
+}
+Sheet.prototype.read_delay = function () {
+	this.delay = +document.getElementById("delay").value;
+	document.getElementById("delay_label_text").innerHTML = "" + this.delay + "s";
+}
+Sheet.prototype.read_duration = function () {
+	this.duration = +document.getElementById("duration").value;
+	document.getElementById("duration_label_text").innerHTML = "" + this.duration + "s";
 }
 //add a new random note from the accepted_notes
 Sheet.prototype.advance = function () {

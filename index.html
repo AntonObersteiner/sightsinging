@@ -55,6 +55,10 @@
 				<hr />
 				<label for="transpose"> Transponiert: <span id="transpose_label_text"> 0 </span> </label>
 				<input type="range" id="transpose" min="-24" max="24" step="1" value="0" onchange="sheet.read_transpose()">
+				<label for="delay"> Verzögerung: <span id="delay_label_text"> 1s </span> </label>
+				<input type="range" id="delay" min="0" max="5" step=".1" value="1" onchange="sheet.read_delay()">
+				<label for="duration"> Tondauer: <span id="duration_label_text"> 1s </span> </label>
+				<input type="range" id="duration" min="0" max="5" step=".1" value="1" onchange="sheet.read_duration()">
 			</div>
 		</section>
 	</nav>
