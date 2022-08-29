@@ -223,7 +223,9 @@ Sheet.prototype.write_accepted = function () {
 			for_row.setAttribute("id", "for_row_" + (octave + 4));
 			for_row.setAttribute("onclick", "sheet.check_accept_row(" + octave + ");");
 		}
-		row.appendChild(document.createElement("td")).appendChild(for_row);
+		for_row_td = document.createElement("td");
+		for_row_td.setAttribute("class", "separated-left");
+		row.appendChild(for_row_td).appendChild(for_row);
 	}
 }
 Sheet.prototype.read_accepted = function () {
