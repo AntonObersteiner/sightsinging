@@ -176,26 +176,32 @@ Sheet.prototype.accept = function (note) {
 	//read the whole array from the page
 	this.read_accepted();
 }
-Sheet.prototype.clear_accept_row = function (octave) {
-	let new_accepted_notes = [];
-	this.accepted_notes.forEach((note, i) => {
-		if (12 * octave <= note && note < 12 * (octave + 1))
-			; //do not copy to new list
-		else
-			new_accepted_notes.push(note);
-	});
-	this.accepted_notes = new_accepted_notes;
-	this.write_accepted();
-}
-Sheet.prototype.set_accept_row = function (octave) {
-	for (let note = 12 * octave; note < 12 * (octave + 1); note++)
-		this.accepted_notes.push(note);
+Sheet.prototype.check_accept_row = function (octave) {
+	//checkbox has been touched, determine if it was 'on' or 'off'
+	let new_state_on = document.getElementById("for_row_" + (octave + 4)).checked;
 
+	//bounds for row of notes
+	lower = 12 * octave;
+	upper = 12 * (octave + 1);
+
+	if (new_state_on) {
+		for (let note = lower; note < upper; note++) {
+			if (!this.accepted_notes.includes(note))
+				this.accepted_notes.push(note);
+		}
+	} else {
+		//leave only those in the range
+		this.accepted_notes = this.accepted_notes.filter(
+			note => !(lower <= note && note < upper)
+		);
+	}
 	this.write_accepted();
 }
 Sheet.prototype.write_accepted = function () {
 	for (let octave = -2; octave < 2; octave++) {
 		row = document.getElementById("accept_row_C" + (octave + 4));
+		//save the checkbox for the whole row so its state isn't lost
+		for_row = document.getElementById("for_row_" + (octave + 4));
 		while (row.childElementCount)
 			row.deleteCell(0);
 
@@ -211,17 +217,13 @@ Sheet.prototype.write_accepted = function () {
 			row.appendChild(document.createElement("td")).appendChild(checkbox);
 		}
 
-		set_row = document.createElement("input");
-		set_row.setAttribute("type", "button");
-		set_row.setAttribute("id", "set_" + (octave + 4));
-		set_row.setAttribute("onclick", "sheet.set_accept_row(" + octave + ");");
-		row.appendChild(document.createElement("td")).appendChild(set_row);
-
-		clear_row = document.createElement("input");
-		clear_row.setAttribute("type", "button");
-		clear_row.setAttribute("id", "clear_" + (octave + 4));
-		clear_row.setAttribute("onclick", "sheet.clear_accept_row(" + octave + ");");
-		row.appendChild(document.createElement("td")).appendChild(clear_row);
+		if (for_row == null) {
+			for_row = document.createElement("input");
+			for_row.setAttribute("type", "checkbox");
+			for_row.setAttribute("id", "for_row_" + (octave + 4));
+			for_row.setAttribute("onclick", "sheet.check_accept_row(" + octave + ");");
+		}
+		row.appendChild(document.createElement("td")).appendChild(for_row);
 	}
 }
 Sheet.prototype.read_accepted = function () {
