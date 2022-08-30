@@ -146,7 +146,7 @@ Sheet.prototype.draw = function () {
 		for (let i = 0; i < this.notes.length; i++) {
 			note = this.notes[i];
 			in_C = this.to_C_major(note);
-			height_in_C = 7 * in_C["octave"] + in_C["line"];// + in_C["sharp"] / 2;
+			height_in_C = 7 * in_C["octave"] + in_C["line"];
 			note_height = 7 + height_in_C / 2;
 			pos = sheet_field.to_pixels(
 				(i + .7) / this.length,
