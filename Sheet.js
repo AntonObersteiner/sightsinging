@@ -96,7 +96,18 @@ Sheet.prototype.line_relative_to_note = function (pos, note_head, x1, y1, x2, y2
 		pos.y + y2 * note_head.y,
 	);
 }
+Sheet.prototype.show_note = function (note) {
+	note -= sheet.transpose;
+	plot_field = this.show["plot"];
+	if (plot_field) {
+		//convert the sheet info to pixels
+		left  = plot_field.to_pixels(0, 1 - note / this.height);
+		right = plot_field.to_pixels(1, 1 - note / this.height);
+		line(left.x, left.y, right.x, right.y);
+	}
+}
 Sheet.prototype.draw = function () {
+	strokeWeight(2);
 	plot_field = this.show["plot"];
 	if (plot_field) {
 		noFill(); //set fill α to transparent
@@ -119,6 +130,7 @@ Sheet.prototype.draw = function () {
 		endShape();
 	}
 
+	strokeWeight(1);
 	sheet_field = this.show["sheet"];
 	if (sheet_field) {
 		//music notation lines
