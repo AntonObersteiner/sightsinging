@@ -10,6 +10,7 @@ Field.prototype.to_pixels = function (x, y, a = new p5.Vector(0, 0), b = new p5.
 		map(y, a.y, b.y, this.origin.y, this.origin.y + this.size.y),
 	);
 }
+Field.prototype.map = Field.prototype.to_pixels;
 
 function Sheet() {
 	//pitches in half-tones:
