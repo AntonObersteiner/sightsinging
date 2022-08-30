@@ -1,8 +1,11 @@
 let sheet;
 let synth;
 let audio_state;
+let canvas_height = 600;
+let canvas_width = 600;
+
 function setup() {
-	createCanvas(600, 600);
+	createCanvas(canvas_height, canvas_height);
 	sheet = new Sheet();
 	//mimics the autoplay policy
 	getAudioContext().suspend();

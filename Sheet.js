@@ -147,10 +147,10 @@ Sheet.prototype.draw = function () {
 			note = this.notes[i];
 			in_C = this.to_C_major(note);
 			height_in_C = 7 * in_C["octave"] + in_C["line"];// + in_C["sharp"] / 2;
-			height = 7 + height_in_C / 2;
+			note_height = 7 + height_in_C / 2;
 			pos = sheet_field.to_pixels(
 				(i + .7) / this.length,
-				1.0 - height / this.lines
+				1.0 - note_height / this.lines
 			);
 
 			note_head = new p5.Vector(null, .95 * sheet_field.size.y / this.lines);
