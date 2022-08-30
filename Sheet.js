@@ -280,6 +280,6 @@ Sheet.prototype.advance = function () {
 			this.notes = this.notes.slice(1);
 	}
 }
-Sheet.prototype.clear = function () {
+Sheet.prototype.clear_notes = function () {
 	this.notes = [];
 }
