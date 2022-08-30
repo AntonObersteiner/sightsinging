@@ -25,6 +25,9 @@ function note_to_freq (note) {
 	let note_as_A440 = note - 9;
 	return 440 * pow(2, note_as_A440 / 12);
 }
+function freq_to_note (freq) {
+	return log(freq / 440) / log(2) * 12 + 9;
+}
 
 function draw() {
 	clear();
@@ -103,12 +106,25 @@ function analyze_fft (
 		endShape();
 	}
 
+	let note_result = note_of_max_energy;
+	//often, overtones are louder than the actual fundamental,
+	//so try to find fundamentals of the found overtone in note_of_max_energy
+	let freq_of_max_energy = note_to_freq(note_of_max_energy);
+	for (let overtone = 2; overtone < 10; overtone++) {
+		//test this potential fundamental
+		let freq_fundamental = freq_of_max_energy / overtone;
+		let energy_fundmental = fft.getEnergy(freq_fundamental);
+		if (energy_fundmental >= max_energy * .5) {
+			note_result = freq_to_note(freq_fundamental);
+		}
+	}
+
 	if (draw_field) {
-		let mapped = draw_field.map(note_to_freq(note_of_max_energy), max_energy, energy_origin, energy_unit);
+		let mapped = draw_field.map(note_to_freq(note_result), max_energy, energy_origin, energy_unit);
 		ellipse(mapped.x, mapped.y, 10, 10);
 	}
 
-	return note_of_max_energy;
+	return note_result;
 }
 
 function mousePressed() {
