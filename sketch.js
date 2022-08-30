@@ -17,7 +17,12 @@ function setup() {
 
 	mic = new p5.AudioIn();
 	mic.start();
-	fft = new p5.FFT(0, 4096);
+	//these are more buckets than recommended by the documentation,
+	//but I am only interested in the lower frequencies and need a lot of resolution there
+	//and it seems not to cause problems (recommended are 16 to 1024)
+	let buckets = 4096;
+	let smoothing = 0; //∈[0, 1]
+	fft = new p5.FFT(smoothing, buckets);
 	fft.setInput(mic);
 }
 
@@ -44,11 +49,11 @@ function draw() {
 
 	//draw raw spectrum
 	noStroke();
-	fill(128, 128, 128, 128);
+	fill(170, 128);
 	draw_spectrum(upper_half, spectrum);
 
 	//draw energy of frequencies of notes
-	stroke(0, 0, 0, 128);
+	stroke(0, 0, 0, 64);
 	let note_of_max_energy = analyze_fft(lower_half);
 	sheet.show_note(note_of_max_energy);
 }
