@@ -98,7 +98,6 @@ Sheet.prototype.line_relative_to_note = function (pos, note_head, x1, y1, x2, y2
 	);
 }
 Sheet.prototype.show_note = function (note) {
-	note -= sheet.transpose;
 	plot_field = this.show["plot"];
 	if (plot_field) {
 		//convert the sheet info to pixels
