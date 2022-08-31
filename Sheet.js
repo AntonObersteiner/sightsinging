@@ -376,7 +376,6 @@ Sheet.prototype.forward = function () {
 		this.current_note = 0;
 	}
 
-	console.log("forward", this.notes, this.current_note);
 	this.play(this.notes[this.current_note]);
 }
 Sheet.prototype.clear_notes = function () {

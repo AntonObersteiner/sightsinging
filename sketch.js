@@ -33,7 +33,8 @@ function draw() {
 	if (sheet == null) {
 		clear();
 		text("klicken oder Taste drücken!", canvas_width / 2, canvas_height / 2);
-		return noLoop();
+		noLoop();
+		return;
 	}
 
 	clear();
