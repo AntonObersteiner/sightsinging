@@ -1,22 +1,50 @@
 let sheet;
 let synth;
 let audio_state;
-let mic, fft;
 let canvas_height = 600;
 let canvas_width = 600;
-//what level of energy in relation to the loudest frequency must a lower note reach to be interpreted as the fundamental
-//TODO: compare with general noise level, not 0
-let fundamental_threshhold = .7;
+let analyzer;
 
-function read_fundamental_threshhold() {
-	fundamental_threshhold = +document.getElementById("fundamental_threshhold").value / 100;
-	document.getElementById("fundamental_threshhold_label_text").innerHTML = "" + round(100 * fundamental_threshhold) + "%";
+function AudioAnalyzer (
+	//these are more buckets than recommended by the documentation,
+	//but I am only interested in the lower frequencies and need a lot of resolution there
+	//and it seems not to cause problems (recommended are 16 to 1024)
+	buckets = 4096,
+	smoothing = 0, //∈[0, 1]
+) {
+	this.mic = new p5.AudioIn();
+	this.mic.start();
+
+	this.fft = new p5.FFT(smoothing, buckets);
+	this.fft.setInput(this.mic);
+
+	//what level of energy in relation to the loudest frequency must a lower note reach to be interpreted as the fundamental
+	//TODO: compare with general noise level, not 0
+	this.fundamental_threshhold = .7;
+
+	this.note_min = -24;
+	this.note_max = 36;
+	this.note_step = .05;
+
+	//what frequency plots to draw and where to draw them
+	this.show = {
+		"raw": new Field(new p5.Vector(0, canvas_height / 2), new p5.Vector(canvas_width, -canvas_height / 2)), //upper half
+		"notes": new Field(new p5.Vector(0, canvas_height), new p5.Vector(canvas_width, -canvas_height / 2)), //lower half
+	};
+
+	this.read_fundamental_threshhold();
 }
-
 
 function setup() {
 	createCanvas(canvas_height, canvas_height);
+	noLoop();
+}
+
+function startAudio () {
+	userStartAudio();
+
 	sheet = new Sheet();
+	analyzer = new AudioAnalyzer();
 	//mimics the autoplay policy
 	getAudioContext().suspend();
 
@@ -24,17 +52,12 @@ function setup() {
 	//This won't play until the context has resumed
 	synth.play('A5', .5, 0, 0.2);
 
-	mic = new p5.AudioIn();
-	mic.start();
-	//these are more buckets than recommended by the documentation,
-	//but I am only interested in the lower frequencies and need a lot of resolution there
-	//and it seems not to cause problems (recommended are 16 to 1024)
-	let buckets = 4096;
-	let smoothing = 0; //∈[0, 1]
-	fft = new p5.FFT(smoothing, buckets);
-	fft.setInput(mic);
+	loop();
+}
 
-	read_fundamental_threshhold();
+AudioAnalyzer.prototype.read_fundamental_threshhold = function () {
+	fundamental_threshhold = +document.getElementById("fundamental_threshhold").value / 100;
+	document.getElementById("fundamental_threshhold_label_text").innerHTML = "" + round(100 * fundamental_threshhold) + "%";
 }
 
 function note_to_freq (note) {
@@ -46,67 +69,75 @@ function freq_to_note (freq) {
 }
 
 function draw() {
+	if (sheet == null)
+		return noLoop();
+
 	clear();
 	sheet.draw();
+	analyzer.draw();
 	if (audio_state != getAudioContext().state) {
 		console.log(getAudioContext().state);
 		audio_state = getAudioContext().state;
 	}
 
-	let spectrum = fft.analyze();
+}
 
-	let upper_half = new Field(new p5.Vector(0, canvas_height / 2), new p5.Vector(canvas_width, -canvas_height / 2));
-	let lower_half = new Field(new p5.Vector(0, canvas_height), new p5.Vector(canvas_width, -canvas_height / 2));
+AudioAnalyzer.prototype.draw = function () {
+	this.spectrum = this.fft.analyze();
 
-	//draw raw spectrum
-	noStroke();
-	fill(170, 128);
-	draw_spectrum(upper_half, spectrum);
+	if (this.show["raw"]) {
+		//draw raw spectrum
+		noStroke();
+		fill(170, 128);
+		this.draw_spectrum();
+	}
 
 	//draw energy of frequencies of notes
-	stroke(0, 0, 0, 64);
-	let note_of_max_energy = analyze_fft(lower_half);
+	if (this.show["notes"])
+		stroke(0, 0, 0, 64);
+	let note_of_max_energy = this.analyze_fft();
 	sheet.show_note(note_of_max_energy);
 }
 
-function draw_spectrum(draw_field, spectrum) {
+AudioAnalyzer.prototype.draw_spectrum = function () {
+	let draw_field = this.show["raw"];
 	//range of values from which to transform to the rectangle specified by draw_field
 	let spectrum_origin = new p5.Vector(0, 0);
-	let spectrum_unit = new p5.Vector(spectrum.length, 256);
+	let spectrum_unit = new p5.Vector(this.spectrum.length, 256);
 
 	beginShape();
 	let mapped = draw_field.map(0, 0, spectrum_origin, spectrum_unit);
 	vertex(mapped.x, mapped.y);
-	for (i = 0; i < spectrum.length; i++) {
-		mapped = draw_field.map(i, spectrum[i], spectrum_origin, spectrum_unit);
+	for (i = 0; i < this.spectrum.length; i++) {
+		mapped = draw_field.map(i, this.spectrum[i], spectrum_origin, spectrum_unit);
 		vertex(mapped.x, mapped.y);
 	}
-	mapped = draw_field.map(spectrum.length, 0, spectrum_origin, spectrum_unit);
+	mapped = draw_field.map(this.spectrum.length, 0, spectrum_origin, spectrum_unit);
 	vertex(mapped.x, mapped.y);
 	endShape();
 }
 
-function analyze_fft (
-	draw_field = null,
+AudioAnalyzer.prototype.analyze_fft = function (
 	note_max = 36,
 	note_min = -24,
 	note_step = .05,
 ) {
+	let draw_field = this.show["notes"];
 	//range of values from which to transform to the rectangle specified by draw_field
-	let energy_origin = new p5.Vector(note_to_freq(note_min), 0);
-	let energy_unit = new p5.Vector(note_to_freq(note_max) - note_to_freq(note_min), 256);
+	let energy_origin = new p5.Vector(note_to_freq(this.note_min), 0);
+	let energy_unit = new p5.Vector(note_to_freq(this.note_max) - note_to_freq(this.note_min), 256);
 
 	let max_energy = -1;
 	let note_of_max_energy = -1; //maximally intense frequency
 	let mapped;
 	if (draw_field) {
 		beginShape();
-		mapped = draw_field.map(note_to_freq(note_min), 0, energy_origin, energy_unit);
+		mapped = draw_field.map(note_to_freq(this.note_min), 0, energy_origin, energy_unit);
 		vertex(mapped.x, mapped.y);
 	}
-	for (let note = note_min; note <= note_max; note += note_step) {
+	for (let note = this.note_min; note <= this.note_max; note += note_step) {
 		let freq = note_to_freq(note);
-		let energy = fft.getEnergy(freq);
+		let energy = this.fft.getEnergy(freq);
 		if (energy > max_energy) {
 			max_energy = energy;
 			note_of_max_energy = note;
@@ -117,7 +148,7 @@ function analyze_fft (
 		}
 	}
 	if (draw_field) {
-		mapped = draw_field.map(note_to_freq(note_max), 0, energy_origin, energy_unit);
+		mapped = draw_field.map(note_to_freq(this.note_max), 0, energy_origin, energy_unit);
 		vertex(mapped.x, mapped.y);
 		endShape();
 	}
@@ -130,9 +161,9 @@ function analyze_fft (
 		//test this potential fundamental
 		let freq_fundamental = freq_of_max_energy / overtone;
 		//check if frequency is lower than lowest expected note
-		if (freq_to_note(freq_fundamental) < note_min)
+		if (freq_to_note(freq_fundamental) < this.note_min)
 			break;
-		let energy_fundmental = fft.getEnergy(freq_fundamental);
+		let energy_fundmental = this.fft.getEnergy(freq_fundamental);
 		if (energy_fundmental >= max_energy * fundamental_threshhold) {
 			note_result = freq_to_note(freq_fundamental);
 		}
@@ -146,8 +177,10 @@ function analyze_fft (
 	return note_result;
 }
 
+
 function mousePressed() {
-	userStartAudio();
+	if (sheet == null)
+		startAudio();
 	console.log(getAudioContext().state);
 	loop();
 }
@@ -158,13 +191,14 @@ function audio_toggle() {
 	else if (getAudioContext().state == 'running')
 		getAudioContext().suspend();
 	else
-		userStartAudio();
+		startAudio();
 		console.log(getAudioContext().state);
 		loop();
 }
 
 function keyPressed() {
-	userStartAudio();
+	if (sheet == null)
+		startAudio();
 	if (keyIsDown(64 + 14)) { //'N'
 		sheet.advance();
 	} else if (keyIsDown(64 + 13)) { //'M'
