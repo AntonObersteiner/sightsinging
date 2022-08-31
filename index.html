@@ -16,7 +16,7 @@
 			<p>Controls: Erster Buchstabe = Tastenkürzel</p>
 			<input type="button" id="mute" value="Mute: Start/Stop" onclick="audio_toggle();" /> <br/>
 			<input type="button" id="next" value="Next: Neue Note" onclick="sheet.advance();" /> <br/>
-			<input type="button" id="clear" value="Clear: Noten weg" onclick="sheet.clear_notes();" /> <br/>
+			<input type="button" id="clear_notes" value="Clear: Noten weg" onclick="sheet.clear_notes();" /> <br/>
 			<input type="button" id="a_play" value="A: Note a' hören" onclick="synth.play('A4', 1, 0, 2);" /> <br/>
 		</section>
 		<section>
@@ -54,14 +54,14 @@
 			</div>
 			<div>
 				<hr />
-				<label for="transpose"> Transponiert: <span id="transpose_label_text"> 0 </span> </label>
-				<input type="range" id="transpose" min="-24" max="24" step="1" value="0" onchange="sheet.read_transpose()">
-				<label for="delay"> Verzögerung: <span id="delay_label_text"> 1s </span> </label>
-				<input type="range" id="delay" min="0" max="5" step=".1" value="1" onchange="sheet.read_delay()">
-				<label for="duration"> Tondauer: <span id="duration_label_text"> 1s </span> </label>
-				<input type="range" id="duration" min="0" max="5" step=".1" value="1" onchange="sheet.read_duration()">
-				<label for="volume"> Lautstärke: <span id="volume_label_text"> 100% </span> </label>
-				<input type="range" id="volume" min="0" max="100" step="1" value="100" onchange="sheet.read_volume()">
+				<label for="sheet_transpose"> Transponiert: <span id="sheet_transpose_label_text"> 0 </span> </label>
+				<input type="range" id="sheet_transpose" min="-24" max="24" step="1" value="0" onchange="sheet.read_transpose()">
+				<label for="sheet_delay"> Verzögerung: <span id="sheet_delay_label_text"> 1s </span> </label>
+				<input type="range" id="sheet_delay" min="0" max="5" step=".1" value="1" onchange="sheet.read_delay()">
+				<label for="sheet_duration"> Tondauer: <span id="sheet_duration_label_text"> 1s </span> </label>
+				<input type="range" id="sheet_duration" min="0" max="5" step=".1" value="1" onchange="sheet.read_duration()">
+				<label for="sheet_volume"> Lautstärke: <span id="sheet_volume_label_text"> 100% </span> </label>
+				<input type="range" id="sheet_volume" min="0" max="100" step="1" value="100" onchange="sheet.read_volume()">
 				<label for="fundamental_threshhold"> Grundton-Schwelle: <span id="fundamental_threshhold_label_text"> 70% </span> </label>
 				<input type="range" id="fundamental_threshhold" min="0" max="100" step="1" value="70" onchange="analyzer.read_fundamental_threshhold();">
 			</div>

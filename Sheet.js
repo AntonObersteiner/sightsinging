@@ -262,23 +262,23 @@ Sheet.prototype.read_accepted = function () {
 	}
 }
 Sheet.prototype.read_transpose = function () {
-	this.transpose = +document.getElementById("transpose").value;
+	this.transpose = +document.getElementById("sheet_transpose").value;
 
 	label_text = (this.transpose > 0 ? "+" : "") + this.transpose;
 	label_text += " (C4 → " + this.get_note_code(this.transpose) + ")";
-	document.getElementById("transpose_label_text").innerHTML =  label_text;
+	document.getElementById("sheet_transpose_label_text").innerHTML =  label_text;
 }
 Sheet.prototype.read_delay = function () {
-	this.delay = +document.getElementById("delay").value;
-	document.getElementById("delay_label_text").innerHTML = "" + this.delay + "s";
+	this.delay = +document.getElementById("sheet_delay").value;
+	document.getElementById("sheet_delay_label_text").innerHTML = "" + this.delay + "s";
 }
 Sheet.prototype.read_duration = function () {
-	this.duration = +document.getElementById("duration").value;
-	document.getElementById("duration_label_text").innerHTML = "" + this.duration + "s";
+	this.duration = +document.getElementById("sheet_duration").value;
+	document.getElementById("sheet_duration_label_text").innerHTML = "" + this.duration + "s";
 }
 Sheet.prototype.read_volume = function () {
-	this.volume = +document.getElementById("volume").value / 100;
-	document.getElementById("volume_label_text").innerHTML = "" + round(this.volume * 100) + "%";
+	this.volume = +document.getElementById("sheet_volume").value / 100;
+	document.getElementById("sheet_volume_label_text").innerHTML = "" + round(this.volume * 100) + "%";
 }
 //add a new random note from the accepted_notes
 Sheet.prototype.advance = function () {
