@@ -68,5 +68,9 @@ function keyPressed() {
 		synth.play('A5', 1, 0, 2);
 	} else if (keyIsDown(64 + 3)) { //'C'
 		sheet.clear();
+	} else if (keyIsDown(LEFT_ARROW)) { //→
+		sheet.backward();
+	} else if (keyIsDown(RIGHT_ARROW)) { //←
+		sheet.forward();
 	}
 }

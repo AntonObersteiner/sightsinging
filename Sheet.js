@@ -18,6 +18,11 @@ function Sheet() {
 	//48 = C4 = c'
 	//57 = A4 = a' = 440Hz
 	this.notes = [];
+
+	//index into this.notes, usually pointing after the last note (to this.note.length),
+	//can be moved back and forth with arrow keys
+	this.current_note = 0;
+
 	this.accepted_notes = [0, 1, 2, 4, 5, 6, 7, 9, 11, 12];
 	this.natural_notes = [0, 2, 4, 5, 7, 9, 11, 12];
 	this.drawn_lines = [2, 3, 4, 5, 6, 8, 9, 10, 11, 12];
@@ -176,7 +181,10 @@ Sheet.prototype.draw = function () {
 				this.line_relative_to_note(pos, note_head, -1.70, +0.30, -0.75, +0.30); // lower -
 			}
 
-			strokeWeight(1.5);
+			if (i == this.current_note)
+				strokeWeight(2);
+			else
+				strokeWeight(1.5);
 			ellipse(pos.x, pos.y, note_head.x, note_head.y);
 		}
 		strokeWeight(1);
@@ -280,24 +288,61 @@ Sheet.prototype.read_volume = function () {
 	this.volume = +document.getElementById("sheet_volume").value / 100;
 	document.getElementById("sheet_volume_label_text").innerHTML = "" + round(this.volume * 100) + "%";
 }
-//add a new random note from the accepted_notes
-Sheet.prototype.advance = function () {
-	new_note = random(this.accepted_notes);
-	this.notes.push(new_note);
-
+Sheet.prototype.play = function (note) {
 	this.synth.play(
-		this.get_transposed_note_code(new_note),
+		this.get_transposed_note_code(note),
 		this.volume,
 		this.delay,
 		this.duration
 	);
+}
+Sheet.prototype.add_note = function () {
+	new_note = random(this.accepted_notes);
+	this.notes.push(new_note);
+	return new_note;
+}
+//add a new random note from the accepted_notes
+Sheet.prototype.advance = function () {
+	let new_note = this.add_note();
+	//pointing to the next coming note, not to the newly added
+	this.current_note++;
+
+	this.play(new_note);
 
 	if (this.notes.length > this.length * .9) {
-		if (this.when_full == "jump")
+		if (this.when_full == "jump") {
+			let current_note_to_last_note = this.notes.length - this.current_note;
 			this.notes = this.notes.slice(floor(this.notes.length / 2));
-		else //if (this.when_full == "step")
+			//restore with the constraint of being >= 0
+			this.current_note = max(0, this.notes.length - current_note_to_last_note);
+		} else { //if (this.when_full == "step")
 			this.notes = this.notes.slice(1);
+			this.current_note--;
+		}
 	}
+}
+Sheet.prototype.backward = function () {
+	//snap to after the current last note
+	if (this.current_note > this.notes.length)
+		this.current_note = this.notes.length;
+
+	//move back if possible
+	this.current_note = max(this.current_note - 1, 0);
+
+	//play, if there are any notes
+	if (this.notes.length > 0)
+		this.play(this.notes[this.current_note]);
+}
+Sheet.prototype.forward = function () {
+	//if already pointing to the end, where no actual note is, add new note
+	if (this.current_note >= this.notes.length)
+		return this.advance();
+	else if (this.current_note < 0)
+		this.current_note = -1;
+
+	//move forward, will then be in a valid state
+	this.current_note++;
+	this.play(this.notes[this.current_note]);
 }
 Sheet.prototype.clear_notes = function () {
 	this.notes = [];
