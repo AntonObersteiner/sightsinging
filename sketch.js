@@ -67,7 +67,7 @@ function keyPressed() {
 	} else if (keyIsDown(64 + 1)) { //'A'
 		synth.play('A5', 1, 0, 2);
 	} else if (keyIsDown(64 + 3)) { //'C'
-		sheet.clear();
+		sheet.clear_notes();
 	} else if (keyIsDown(LEFT_ARROW)) { //→
 		sheet.backward();
 	} else if (keyIsDown(RIGHT_ARROW)) { //←
