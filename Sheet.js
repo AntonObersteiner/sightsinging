@@ -103,6 +103,12 @@ Sheet.prototype.line_relative_to_note = function (pos, note_head, x1, y1, x2, y2
 		pos.y + y2 * note_head.y,
 	);
 }
+Sheet.prototype.draw_sharp = function (pos, note_head) {
+	this.line_relative_to_note(pos, note_head, -1.55, +0.90, -1.35, -0.90); // left /
+	this.line_relative_to_note(pos, note_head, -1.10, +0.90, -0.90, -0.90); // right /
+	this.line_relative_to_note(pos, note_head, -1.65, -0.30, -0.70, -0.30); // upper -
+	this.line_relative_to_note(pos, note_head, -1.70, +0.30, -0.75, +0.30); // lower -
+}
 Sheet.prototype.show_note = function (note) {
 	stroke(0);
 	plot_field = this.show["plot"];
@@ -174,12 +180,8 @@ Sheet.prototype.draw = function () {
 			}
 
 			//add # in front
-			if (in_C["sharp"]) {
-				this.line_relative_to_note(pos, note_head, -1.55, +0.90, -1.35, -0.90); // left /
-				this.line_relative_to_note(pos, note_head, -1.10, +0.90, -0.90, -0.90); // right /
-				this.line_relative_to_note(pos, note_head, -1.65, -0.30, -0.70, -0.30); // upper -
-				this.line_relative_to_note(pos, note_head, -1.70, +0.30, -0.75, +0.30); // lower -
-			}
+			if (in_C["sharp"])
+				this.draw_sharp(pos, note_head);
 
 			if (i == this.current_note)
 				strokeWeight(2);
