@@ -60,9 +60,7 @@ function audio_toggle() {
 function keyPressed() {
 	if (sheet == null)
 		startAudio();
-	if (keyIsDown(64 + 14)) { //'N'
-		sheet.advance();
-	} else if (keyIsDown(64 + 13)) { //'M'
+	if (keyIsDown(64 + 13)) { //'M'
 		audio_toggle();
 	} else if (keyIsDown(64 + 1)) { //'A'
 		synth.play('A5', 1, 0, 2);

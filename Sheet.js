@@ -299,16 +299,10 @@ Sheet.prototype.play = function (note) {
 Sheet.prototype.add_note = function () {
 	new_note = random(this.accepted_notes);
 	this.notes.push(new_note);
+	this.check_notes_length();
 	return new_note;
 }
-//add a new random note from the accepted_notes
-Sheet.prototype.advance = function () {
-	let new_note = this.add_note();
-	//pointing to the next coming note, not to the newly added
-	this.current_note++;
-
-	this.play(new_note);
-
+Sheet.prototype.check_notes_length = function () {
 	if (this.notes.length > this.length * .9) {
 		if (this.when_full == "jump") {
 			let current_note_to_last_note = this.notes.length - this.current_note;
@@ -334,14 +328,17 @@ Sheet.prototype.backward = function () {
 		this.play(this.notes[this.current_note]);
 }
 Sheet.prototype.forward = function () {
-	//if already pointing to the end, where no actual note is, add new note
-	if (this.current_note >= this.notes.length)
-		return this.advance();
-	else if (this.current_note < 0)
-		this.current_note = -1;
-
-	//move forward, will then be in a valid state
 	this.current_note++;
+
+	//if already pointing to the end, where no actual note is, add new note
+	if (this.current_note >= this.notes.length) {
+		this.add_note();
+		this.current_note = this.notes.length - 1;
+	}else if (this.current_note < 0) {
+		this.current_note = 0;
+	}
+
+	console.log("forward", this.notes, this.current_note);
 	this.play(this.notes[this.current_note]);
 }
 Sheet.prototype.clear_notes = function () {
