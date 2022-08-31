@@ -16,6 +16,9 @@ function startAudio () {
 
 	sheet = new Sheet();
 	analyzer = new AudioAnalyzer();
+
+	//make settings visible
+	document.getElementsByTagName("nav")[0].removeAttribute("hidden");
 	//mimics the autoplay policy
 	getAudioContext().suspend();
 
@@ -27,8 +30,11 @@ function startAudio () {
 }
 
 function draw() {
-	if (sheet == null)
+	if (sheet == null) {
+		clear();
+		text("klicken oder Taste drücken!", canvas_width / 2, canvas_height / 2);
 		return noLoop();
+	}
 
 	clear();
 	sheet.draw();
