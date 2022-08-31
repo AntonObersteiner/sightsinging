@@ -22,6 +22,8 @@ function Sheet() {
 	//index into this.notes, usually pointing after the last note (to this.note.length),
 	//can be moved back and forth with arrow keys
 	this.current_note = 0;
+	//after how many notes in between must a # be written again (natural after sharp is written as long as the sharp note is still drawn)
+	this.threshhold_sharp_redraw = 3;
 
 	this.accepted_notes = [0, 1, 2, 4, 5, 6, 7, 9, 11, 12];
 	this.natural_notes = [0, 2, 4, 5, 7, 9, 11, 12];
@@ -109,6 +111,12 @@ Sheet.prototype.draw_sharp = function (pos, note_head) {
 	this.line_relative_to_note(pos, note_head, -1.65, -0.30, -0.70, -0.30); // upper -
 	this.line_relative_to_note(pos, note_head, -1.70, +0.30, -0.75, +0.30); // lower -
 }
+Sheet.prototype.draw_natural = function (pos, note_head) {
+	this.line_relative_to_note(pos, note_head, -1.48, +0.30, -1.35, -0.90); // left /
+	this.line_relative_to_note(pos, note_head, -1.10, +0.90, -0.97, -0.30); // right /
+	this.line_relative_to_note(pos, note_head, -1.41, -0.30, -0.97, -0.30); // upper -
+	this.line_relative_to_note(pos, note_head, -1.48, +0.30, -1.04, +0.30); // lower -
+}
 Sheet.prototype.show_note = function (note) {
 	stroke(0);
 	plot_field = this.show["plot"];
@@ -156,6 +164,7 @@ Sheet.prototype.draw = function () {
 			}
 		}
 
+		let recent_sharp_notes = {};
 		//note heads
 		for (let i = 0; i < this.notes.length; i++) {
 			note = this.notes[i];
@@ -179,9 +188,36 @@ Sheet.prototype.draw = function () {
 				this.line_relative_to_note(pos, note_head, -0.75, +0.00, +0.75, +0.00);
 			}
 
-			//add # in front
-			if (in_C["sharp"])
-				this.draw_sharp(pos, note_head);
+			//find out whether the current note should get a sharp or a natural
+			//
+			//contains how many notes ago the current note was found, e.g. "note == C#, found C# three notes ago"
+			let found_note_as_sharp = undefined;
+			//how many notes agor a sharp version of the note was found, e.g. "note == C, found C# three notes ago"
+			let found_sharp_verions_of_note = undefined;
+
+			for (let octave = -4; octave < 4; octave++) {
+				let note_as_is = note + 12 * octave;
+				if (recent_sharp_notes[note_as_is] != undefined)
+					found_note_as_sharp = i - recent_sharp_notes[note_as_is];
+
+				let note_sharp = note + 12 * octave + 1;
+				if (recent_sharp_notes[note_sharp] != undefined)
+					found_sharp_verions_of_note = i - recent_sharp_notes[note_sharp];
+			}
+			if (in_C["sharp"]) {
+				if (found_note_as_sharp == undefined || found_note_as_sharp > this.thress) {
+					this.draw_sharp(pos, note_head);
+				}
+				//this assumes that seeing a sharp, non-marked note
+				//reminds people enough of the fact that the next must also be sharp
+				//if you do not like this, make the threshhold stricter,
+				//do not move this line up, because then the following would be
+				//the notation for tree equal C#s: #C . . . C #C with threshhold == 3
+				recent_sharp_notes[note] = i;
+			} else if (found_sharp_verions_of_note != undefined) {
+				this.draw_natural(pos, note_head);
+				recent_sharp_notes[note + 1] = undefined;
+			}
 
 			if (i == this.current_note)
 				strokeWeight(2);
