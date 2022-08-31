@@ -4,6 +4,15 @@ let audio_state;
 let mic, fft;
 let canvas_height = 600;
 let canvas_width = 600;
+//what level of energy in relation to the loudest frequency must a lower note reach to be interpreted as the fundamental
+//TODO: compare with general noise level, not 0
+let fundamental_threshhold = .7;
+
+function read_fundamental_threshhold() {
+	fundamental_threshhold = +document.getElementById("fundamental_threshhold").value / 100;
+	document.getElementById("fundamental_threshhold_label_text").innerHTML = "" + (100 * this.fundamental_threshhold) + "%";
+}
+
 
 function setup() {
 	createCanvas(canvas_height, canvas_height);
@@ -118,8 +127,11 @@ function analyze_fft (
 	for (let overtone = 2; overtone < 10; overtone++) {
 		//test this potential fundamental
 		let freq_fundamental = freq_of_max_energy / overtone;
+		//check if frequency is lower than lowest expected note
+		if (freq_to_note(freq_fundamental) < note_min)
+			break;
 		let energy_fundmental = fft.getEnergy(freq_fundamental);
-		if (energy_fundmental >= max_energy * .5) {
+		if (energy_fundmental >= max_energy * fundamental_threshhold) {
 			note_result = freq_to_note(freq_fundamental);
 		}
 	}

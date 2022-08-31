@@ -59,6 +59,8 @@
 				<input type="range" id="delay" min="0" max="5" step=".1" value="1" onchange="sheet.read_delay()">
 				<label for="duration"> Tondauer: <span id="duration_label_text"> 1s </span> </label>
 				<input type="range" id="duration" min="0" max="5" step=".1" value="1" onchange="sheet.read_duration()">
+				<label for="fundamental_threshhold"> Grundton-Schwelle: <span id="fundamental_threshhold_label_text"> 70% </span> </label>
+				<input type="range" id="fundamental_threshhold" min="0" max="100" step="1" value="70" onchange="read_fundamental_threshhold()">
 			</div>
 		</section>
 	</nav>
