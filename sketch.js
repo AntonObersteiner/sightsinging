@@ -10,7 +10,7 @@ let fundamental_threshhold = .7;
 
 function read_fundamental_threshhold() {
 	fundamental_threshhold = +document.getElementById("fundamental_threshhold").value / 100;
-	document.getElementById("fundamental_threshhold_label_text").innerHTML = "" + (100 * this.fundamental_threshhold) + "%";
+	document.getElementById("fundamental_threshhold_label_text").innerHTML = "" + round(100 * fundamental_threshhold) + "%";
 }
 
 
@@ -33,6 +33,8 @@ function setup() {
 	let smoothing = 0; //∈[0, 1]
 	fft = new p5.FFT(smoothing, buckets);
 	fft.setInput(mic);
+
+	read_fundamental_threshhold();
 }
 
 function note_to_freq (note) {
